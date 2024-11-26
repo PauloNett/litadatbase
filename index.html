@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Kanban - Supabase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px;
+        }
+        .kanban-board {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .kanban-column {
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .kanban-column h2 {
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+        }
+        .kanban-items {
+            padding: 10px;
+            min-height: 200px;
+            border-top: 2px solid #ddd;
+        }
+        .kanban-item {
+            background: #f9f9f9;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #january { background-color: #ff9999; }
+        #february { background-color: #ffcc99; }
+        #march { background-color: #ffff99; }
+        #april { background-color: #ccff99; }
+        #may { background-color: #99ff99; }
+        #june { background-color: #99ffcc; }
+        #july { background-color: #99ffff; }
+        #august { background-color: #99ccff; }
+        #september { background-color: #9999ff; }
+        #october { background-color: #cc99ff; }
+        #november { background-color: #ff99cc; }
+        #december { background-color: #ff99ff; }
+        .form-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-container input, .form-container select {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Painel Kanban - Supabase</h1>
+    <div class="form-container">
+        <input type="text" id="name" placeholder="Nome">
+        <input type="text" id="phone" placeholder="Telefone">
+        <input type="text" id="locator" placeholder="Localizador">
+        <input type="text" id="destination" placeholder="Destino">
+        <select id="month">
+            <option value="january">Janeiro</option>
+            <option value="february">Fevereiro</option>
+            <option value="march">Março</option>
+            <option value="april">Abril</option>
+            <option value="may">Maio</option>
+            <option value="june">Junho</option>
+            <option value="july">Julho</option>
+            <option value="august">Agosto</option>
+            <option value="september">Setembro</option>
+            <option value="october">Outubro</option>
+            <option value="november">Novembro</option>
+            <option value="december">Dezembro</option>
+        </select>
+        <button onclick="sendToSupabase()">Adicionar</button>
+    </div>
+    <div class="kanban-board">
+        <div class="kanban-column" id="january"><h2>Janeiro</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="february"><h2>Fevereiro</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="march"><h2>Março</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="april"><h2>Abril</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="may"><h2>Maio</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="june"><h2>Junho</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="july"><h2>Julho</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="august"><h2>Agosto</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="september"><h2>Setembro</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="october"><h2>Outubro</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="november"><h2>Novembro</h2><div class="kanban-items"></div></div>
+        <div class="kanban-column" id="december"><h2>Dezembro</h2><div class="kanban-items"></div></div>
+    </div>
+    <script type="module">
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+        const supabaseUrl = "https://eschchhuqtmsjslnpinm.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzY2hjaGh1cXRtc2pzbG5waW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NzcwMDYsImV4cCI6MjA0ODE1MzAwNn0.BsmZyN-J8Jg-Lzb-2JNwUSZDnb-CZgHtKav1_Z_2k70";
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        async function sendToSupabase() {
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+            const locator = document.getElementById("locator").value;
+            const destination = document.getElementById("destination").value;
+            const month = document.getElementById("month").value;
+
+            if (name && phone && locator && destination && month) {
+                const { error } = await supabase
+                    .from("embarques")
+                    .insert([{ name, phone, locator, destination, month }]);
+
+                if (error) {
+                    alert("Erro ao salvar no Supabase: " + error.message);
+                } else {
+                    alert("Dados enviados com sucesso!");
+                    const kanbanColumn = document.querySelector(`#${month} .kanban-items`);
+                    const newItem = document.createElement("div");
+                    newItem.classList.add("kanban-item");
+                    newItem.innerHTML = `
+                        <p><strong>Nome:</strong> ${name}</p>
+                        <p><strong>Telefone:</strong> ${phone}</p>
+                        <p><strong>Localizador:</strong> ${locator}</p>
+                        <p><strong>Destino:</strong> ${destination}</p>
+                    `;
+                    kanbanColumn.appendChild(newItem);
+                }
+            } else {
+                alert("Por favor, preencha todos os campos.");
+            }
+        }
+    </script>
+</body>
+</html>
